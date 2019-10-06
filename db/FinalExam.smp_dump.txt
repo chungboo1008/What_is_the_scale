@@ -1,0 +1,5 @@
+
+State Machine - |FinalExam|game:G|temp
+Name temp.1 
+temp.0 0 
+temp.1 1 

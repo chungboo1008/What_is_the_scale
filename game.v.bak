@@ -1,0 +1,509 @@
+module game(clk,reset,segout,scanout,L1,L2,L3,B1,B2,B3,play,check,stop,level,sound,keyBuf);
+input reset, clk, play;
+output reg [7:0] segout;
+output reg [2:0] scanout;
+output wire L1,L2,L3;
+input wire B1,B2,B3;
+output reg [4:0] level=1;  //4bits total 8 level
+output reg [0:0] check = 0;
+output reg [3:0] sound = 0;
+output reg[5:0] keyBuf=6'b111111;
+input stop;
+
+reg [25:0] cnt_scan;
+reg[4:0] sel;
+
+reg [5:0] led;
+
+reg clk1;
+reg clk2;
+
+reg [4:0] q0;
+reg [4:0] q1;
+reg [4:0] q2;
+reg [4:0] q3;
+reg [4:0] q4;
+reg [4:0] q5;
+reg [4:0] q6;
+reg [4:0] q7;
+
+reg [4:0] user [0:3];
+reg [4:0] answer1 [0:3];//answer1 0~4  size:4
+reg [4:0] answer2 [0:3];
+reg [4:0] answer3 [0:3];
+reg [4:0] answer4 [0:3];
+reg [4:0] answer5 [0:3];
+
+reg [3:0] buttom_count=5;
+
+reg[3:0] keyCode=0;
+reg[2:0] bncCount_play=0;
+
+wire din;
+reg dnc_rslt;
+reg [2:0] dly_dnc_rslt;
+reg [4:0] key_press_cnt;
+reg [7:0] scanout1;
+reg [0:0] temp=0;
+reg [1:0] life = 3;
+
+always@(posedge clk or negedge reset)
+begin
+ 	if(!reset)
+ 	begin
+  		cnt_scan<=0;
+ 	end
+ 	else 
+ 	begin 
+  		cnt_scan<=cnt_scan+1;
+  		if(cnt_scan == 25000000)
+  		begin
+   			cnt_scan<=0;
+   			clk1<=~clk1;
+  		end
+ 	end
+end  
+
+always@(posedge clk,negedge reset)
+begin
+ 	if(reset == 0)
+ 	begin
+  		check = 0;
+  		sound = 0;
+  		
+		user[0] = 5'b01101;
+		user[1] = 5'b01101;
+		user[2] = 5'b01101;
+		user[3] = 5'b01101;
+		
+		answer1[0] = 1;
+		answer1[1] = 1;
+		answer1[2] = 5;
+		answer1[3] = 5;
+		
+		answer2[0] = 3;
+		answer2[1] = 2;
+		answer2[2] = 3;
+		answer2[3] = 2;
+		
+		answer3[0] = 3;
+		answer3[1] = 5;
+		answer3[2] = 6;
+		answer3[3] = 5;
+		
+		answer4[0] = 8;
+		answer4[1] = 4;
+		answer4[2] = 7;
+		answer4[3] = 3;
+		
+		answer5[0] = 2;
+		answer5[1] = 5;
+		answer5[2] = 3;
+		answer5[3] = 1;
+		
+		q0=5'b00001; //start from level 1
+  		q1=5'b01011; 
+  		q2=5'b01101;
+  		q3=5'b01101;
+  		q4=5'b01101;
+  		q5=5'b01101;
+  		q6=5'b01101;
+  		q7=5'b01101;
+  		
+  		level = 1;
+		
+		temp = 0;
+		life = 3;
+  	end
+ 	else 
+ 	begin
+ 		if(play == 1)
+			bncCount_play=0;
+ 		else if (play == 0 && bncCount_play <3'b111)
+ 		begin
+  			bncCount_play = bncCount_play + 1;
+  			if(play == 0 && bncCount_play == 3'b111)
+  			begin
+   				check = 1;
+   			end
+ 		end
+			
+		if(keyCode == 1)
+		begin
+			check=1;
+			sound=1;
+			user[buttom_count] <= keyCode;
+		end
+		else if(keyCode == 2)
+		begin
+			check=1;
+			sound=2;
+			user[buttom_count] <= keyCode;
+		end
+		else if(keyCode == 3)
+		begin
+			check=1;
+			sound=3;
+			user[buttom_count] <= keyCode;
+		end
+		else if(keyCode == 4)
+		begin
+			check=1;
+			sound=4;
+			user[buttom_count] <= keyCode;
+		end
+		else if(keyCode == 5)
+		begin
+			check=1;
+			sound=5;
+			user[buttom_count] <= keyCode;
+		end
+		else if(keyCode == 6)
+		begin
+			check=1;
+			sound=6;
+			user[buttom_count] <= keyCode;
+		end
+		else if(keyCode == 7)
+		begin
+			check=1;
+			sound=7;
+			user[buttom_count] <= keyCode;
+		end
+		else if(keyCode == 8)
+		begin
+			check=1;
+			sound=8;
+			user[buttom_count] <= keyCode;
+		end
+		else if(keyCode<1 && keyCode>8)
+		begin
+			check = 0;
+			sound = 0;
+		end
+		
+		if(buttom_count == 0)
+		begin
+			q7<=5'b01101;
+			q6<=5'b01101;
+			q5<=5'b01101;
+			q4<=5'b01101;
+			q7 <= user[0];
+			temp = 0;
+		end			
+		else if(buttom_count == 1)
+			q6 <= user[1];
+		else if(buttom_count == 2)
+			q5 <= user[2];
+		else if(buttom_count == 3)
+			q4 <= user[3];
+		else if(buttom_count==4)
+		begin
+			if(temp == 0 && level == 1 && user[0] == answer1[0] && user[1] == answer1[1] && user[2] == answer1[2] && user[3] == answer1[3])
+			begin
+				check=1;
+				sound=10;
+				level = level + 1;
+				q0<=level;
+				temp = 1;	
+				life = 3;
+			end
+			else if(temp == 0 && level == 2 && user[0] == answer2[0] && user[1] == answer2[1] && user[2] == answer2[2] && user[3] == answer2[3])
+			begin
+				check=1;
+				sound=10;
+				level = level + 1;
+				q0<=level;
+				temp = 1;
+				life = 3;
+			end
+			else if(temp == 0 && level == 3 && user[0] == answer3[0] && user[1] == answer3[1] && user[2] == answer3[2] && user[3] == answer3[3])
+			begin
+				check=1;
+				sound=10;
+				level = level + 1;
+				q0<=level;
+				temp = 1;
+				life = 3;
+			end
+			else if(temp == 0 && level == 4 && user[0] == answer4[0] && user[1] == answer4[1] && user[2] == answer4[2] && user[3] == answer4[3])
+			begin
+				check=1;
+				sound=10;
+				level = level + 1;
+				q0<=level;
+				temp = 1;
+				life = 3;
+			end			
+			else if(temp == 0 && level == 5 && user[0] == answer5[0] && user[1] == answer5[1] && user[2] == answer5[2] && user[3] == answer5[3])
+			begin
+				q0 <= 5'b10010;
+				q1 <= 5'b01111;
+				q2 <= 5'b10000;
+				q3 <= 5'b01110;
+				q4 <= 5'b01001;
+				q5 <= 5'b01100;
+				q6 <= 5'b00000;
+				q7 <= 5'b01010;
+				check=1;
+				sound=11;
+				temp = 1;	
+				life = 0;
+			end
+			else if(temp == 0)
+			begin
+				temp = 1;
+				if(life == 1)
+				begin
+					check=1;
+					sound=12;
+					q7 <= 5'b10010;
+					q6 <= 5'b00000;
+					q5 <= 5'b00101;
+					q4 <= 5'b10001;
+					life = 0;
+				end
+				else
+				begin
+					check=1;
+					sound=9;
+					life = life - 1;
+				end
+			end
+		end
+		
+		if(stop == 1)
+ 		begin
+			sound = 0;
+			check = 0;
+		end
+ 	end
+end 
+
+
+
+
+always@(posedge dnc_rslt, negedge reset) 
+begin
+	if(!reset)
+	begin  
+  		buttom_count = 5;
+  	end
+	else
+	begin
+		if(buttom_count < 5)
+			buttom_count <= buttom_count + 1;
+		else 
+			buttom_count <= 0;		
+	end
+end
+
+
+
+//3x3 debounce
+always@(negedge cnt_scan[10], negedge reset)
+begin
+	if(reset == 0)
+	begin
+		dnc_rslt <= 0;
+		key_press_cnt <= 0;
+	end
+	else
+		if(din == 0)
+			if(key_press_cnt <= 5'b11000)
+			begin
+				key_press_cnt <= key_press_cnt + 7;
+			end
+			else
+				dnc_rslt <= 1;
+		else
+			if(key_press_cnt != 0)
+				key_press_cnt <= key_press_cnt - 1;
+			else
+				dnc_rslt <= 0;
+end
+
+//what?
+always@(posedge cnt_scan[5])
+begin
+	dly_dnc_rslt[0] <= dnc_rslt;
+	dly_dnc_rslt[2:1] <= dly_dnc_rslt[1:0];
+end
+
+
+always@(*)
+	case(dnc_rslt)
+	1: clk2 <= dly_dnc_rslt[2];
+	0: clk2 <= clk1;
+	endcase
+
+assign L3 = scanout1[1] & scanout1[5];
+assign L2 = scanout1[2] & scanout1[6];
+assign L1 = scanout1[3] & scanout1[7];
+
+assign din  = B1 & B2 & B3;
+
+always@(*)
+begin
+	if(dnc_rslt == 0)
+		led <= 6'b111111;
+	else if(dnc_rslt == 1)
+		led <= {L3,L2,L1,B1,B2,B3};
+end
+
+always@(*) 
+begin
+	case(led)
+		6'b011_011:
+		begin
+			keyCode <= 1;
+		end
+		6'b011_101:
+		begin
+			keyCode <= 2;
+		end
+		6'b011_110:
+		begin
+			keyCode <= 3;
+		end
+		6'b101_011:
+		begin
+			keyCode <= 4;
+		end
+		6'b101_101:
+		begin
+			keyCode <= 5;
+		end
+		6'b101_110:
+		begin
+			keyCode <= 6;
+		end
+		6'b110_011:
+		begin
+			keyCode <= 7;
+		end
+		6'b110_101:
+		begin
+			keyCode <= 8;
+		end
+		6'b110_110:
+		begin
+			keyCode <= 9;
+		end
+		default:keyCode <= 0;
+	endcase
+	
+	
+end
+
+always@(cnt_scan[15:13])
+begin
+	scanout <= cnt_scan[15:13];
+
+	case(cnt_scan[15:13])
+		3'b000:
+			scanout1 = 8'b1111_1110;
+		3'b001:
+			scanout1 = 8'b1111_1101;
+		3'b010:
+			scanout1 = 8'b1111_1011;
+		3'b011:
+			scanout1 = 8'b1111_0111;
+		3'b100:
+			scanout1 = 8'b1110_1111;
+		3'b101:
+			scanout1 = 8'b1101_1111;
+		3'b110:
+			scanout1 = 8'b1011_1111;
+		3'b111:
+			scanout1 = 8'b0111_1111;
+		default:
+			scanout1 = 8'b1111_1110;
+	endcase
+end
+
+//chung's part of ringLED to check button pressed
+always@(*)
+begin
+	if(life == 3)
+		keyBuf <= 6'b111000;
+	else if(life == 2)
+		keyBuf <= 6'b111100;
+	else if(life == 1)
+		keyBuf <= 6'b111110;
+	else if(life == 0)
+		keyBuf <= 6'b111111;
+end
+
+
+//light
+
+always@(scanout)
+begin
+	case(scanout)
+		0:
+			sel = q0;
+		1:
+			sel = q1;
+		2:
+			sel = q2;
+		3:
+			sel = q3;
+		4:
+			sel = q4;
+		5:
+			sel = q5;
+		6:
+			sel = q6;
+		7:
+			sel = q7;
+		default:
+			sel = 5'b01011;
+	endcase
+end
+
+always@(sel)
+begin
+	case(sel)
+		5'b00000:
+			segout <= 8'd192;
+		5'b00001:
+			segout <= 8'b1111_1001;
+		5'b00010:
+			segout <= 8'b1010_0100;
+		5'b00011:
+			segout <= 8'b1011_0000;
+		5'b00100:
+			segout <= 8'b1001_1001;
+		5'b00101:
+			segout <= 8'b1001_0010;
+		5'b00110:
+			segout <= 8'b1000_0010;
+		5'b00111:
+			segout <= 8'b1111_1000;
+		5'b01000:
+			segout <= 8'b0111_1001; //high do
+		5'b01001:
+			segout <= 8'b1001_0000; //g
+		5'b01010:
+			segout <= 8'b1100_0110; //c
+		5'b01011:
+			segout <= 8'b0100_0111; //L.
+		5'b01100:
+			segout <= 8'b1100_1000; //n
+		5'b01110:
+			segout <= 8'b1000_1111; //r
+		5'b01111:
+			segout <= 8'b1000_0111; //t
+		5'b10000:
+			segout <= 8'b0100_0000; //a
+		5'b10001:
+			segout <= 8'b1000_0110; //E
+		5'b10010:
+			segout <= 8'b1100_0111; //L
+		default:
+			segout <= 8'b1111_1111;  //5'b01101
+	endcase
+end
+
+endmodule 

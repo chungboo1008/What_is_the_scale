@@ -1,0 +1,28 @@
+module toneTable (autoPlayIndex,tone);
+input [4:0] autoPlayIndex;
+output reg [14:0]tone;
+
+always @ (autoPlayIndex)
+	case(autoPlayIndex)
+ 		5'b01001: tone = 9542;  //1
+ 		5'b01010: tone = 8504;  //2
+ 		5'b01011: tone = 7576;  //3
+ 		5'b01100: tone = 7162;  //4
+	 	5'b01101: tone = 6378;  //5
+	 	5'b01110: tone = 5682;  //6
+ 		5'b01111: tone = 5060;  //7
+ 		5'b11001: tone = 4771;  //11
+ 		5'b11010: tone = 4252;  //22
+ 		5'b11011: tone = 3788;  //33
+ 		5'b11100: tone = 3581;  //44
+ 		5'b11101: tone = 3189;  //55
+ 		5'b11110: tone = 2841;  //66
+ 		5'b11111: tone = 2530;  //77
+ 		
+ 		5'b00001: tone = 8035;  //2.5 b3
+ 		5'b00010: tone = 6020;  //5.5 b6
+ 		5'b00011: tone = 5363;  //6.5 b7
+ 
+ 		default: tone = 0;
+	endcase
+endmodule 

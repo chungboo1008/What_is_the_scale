@@ -1,0 +1,4 @@
+Warning (10268): Verilog HDL information at autoPlay.v(36): always construct contains both blocking and non-blocking assignments
+Warning (10268): Verilog HDL information at game.v(67): always construct contains both blocking and non-blocking assignments
+Warning (10268): Verilog HDL information at game.v(286): always construct contains both blocking and non-blocking assignments
+Warning (10268): Verilog HDL information at game.v(399): always construct contains both blocking and non-blocking assignments

@@ -1,0 +1,66 @@
+--------------------------------------------------------------------------------------
+Timing Analyzer Summary
+--------------------------------------------------------------------------------------
+
+Type           : Worst-case tsu
+Slack          : N/A
+Required Time  : None
+Actual Time    : 8.619 ns
+From           : B2
+To             : game:G|user[3][3]
+From Clock     : --
+To Clock       : clk
+Failed Paths   : 0
+
+Type           : Worst-case tco
+Slack          : N/A
+Required Time  : None
+Actual Time    : 18.543 ns
+From           : game:G|cnt_scan[13]
+To             : segout[2]
+From Clock     : clk
+To Clock       : --
+Failed Paths   : 0
+
+Type           : Worst-case th
+Slack          : N/A
+Required Time  : None
+Actual Time    : 1.168 ns
+From           : B3
+To             : game:G|dnc_rslt
+From Clock     : --
+To Clock       : clk
+Failed Paths   : 0
+
+Type           : Clock Setup: 'clk'
+Slack          : N/A
+Required Time  : None
+Actual Time    : 17.50 MHz ( period = 57.156 ns )
+From           : autoPlay:P|autoPlayIndex[3]
+To             : toneOut:speeker|buzzOut
+From Clock     : clk
+To Clock       : clk
+Failed Paths   : 0
+
+Type           : Clock Hold: 'clk'
+Slack          : Not operational: Clock Skew > Data Delay
+Required Time  : None
+Actual Time    : N/A
+From           : game:G|sound[3]
+To             : autoPlay:P|autoPlayIndex[4]
+From Clock     : clk
+To Clock       : clk
+Failed Paths   : 108
+
+Type           : Total number of failed paths
+Slack          : 
+Required Time  : 
+Actual Time    : 
+From           : 
+To             : 
+From Clock     : 
+To Clock       : 
+Failed Paths   : 108
+
+--------------------------------------------------------------------------------------
+
